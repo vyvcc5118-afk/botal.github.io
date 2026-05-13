@@ -1,14 +1,13 @@
 from telegram import Update
 from telegram.ext import ApplicationBuilder, MessageHandler, filters, ContextTypes
 from openai import OpenAI
-import os
 
-BOT_TOKEN = os.getenv("8948614500:AAEAmVQDqCGl66KG4vo4pCdqkNA5ARWD_xk")
-OPENAI_API_KEY = os.getenv("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")
+BOT_TOKEN = "TOKEN_BOT"
+OPENAI_KEY = "API_KEY"
 
-client = OpenAI(api_key=OPENAI_API_KEY)
+client = OpenAI(api_key=OPENAI_KEY)
 
-async def chat(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text
 
     response = client.chat.completions.create(
@@ -18,14 +17,13 @@ async def chat(update: Update, context: ContextTypes.DEFAULT_TYPE):
         ]
     )
 
-    reply = response.choices[0].message.content
+    ai = response.choices[0].message.content
 
-    await update.message.reply_text(reply)
+    await update.message.reply_text(ai)
 
 app = ApplicationBuilder().token(BOT_TOKEN).build()
 
-app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, chat))
+app.add_handler(MessageHandler(filters.TEXT, reply))
 
 print("Bot đang chạy...")
-
 app.run_polling()
